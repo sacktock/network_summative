@@ -1,46 +1,134 @@
 import socket
 import sys
+import ipaddress
 
+#######################################################################
+############# CLIENT FUNCTIONS ########################################
+#######################################################################
 
-def get_constants(prefix):
-    """Create a dictionary mapping socket module
-    constants to their names.
-    """
-    return {
-        getattr(socket, n): n
-        for n in dir(socket)
-        if n.startswith(prefix)
-    }
+def GET_BOARDS():
+    # Create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    # Connect the socket to the port where the server is listening
+    server_address = (server_name, port)
+    print('connecting to {} port {}'.format(*server_address))
+    sock.connect(server_address)
 
-families = get_constants('AF_')
-types = get_constants('SOCK_')
-protocols = get_constants('IPPROTO_')
+    response = b''
 
-# Create a TCP/IP socket
+    try:
+
+        # Send data
+        message = str.encode('{"request" : "GET_BOARDS"}')
+        print('sending {!r}'.format(message))
+        sock.sendall(message)
+
+        # Look for the response
+        while True:
+            data = sock.recv(16)
+            print('received {!r}'.format(data))
+            if data:
+                response += data
+            else:
+                print('no more data from', server_address)
+                break
+            
+        print('data received from server: ',response)
+    finally:
+        print('closing socket')
+        sock.close()
+        return response
+
+def GET_MESSAGES(board_num):
+        # Create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Connect the socket to the port where the server is listening
+    server_address = (server_name, port)
+    print('connecting to {} port {}'.format(*server_address))
+    sock.connect(server_address)
+
+    response = b''
+    
+    try:
+
+        # Send data
+        message = str.encode('{"request" : "GET_MESSAGES", "board_num" : '+ str(board_num) +'}')
+        print('sending {!r}'.format(message))
+        sock.sendall(message)
+
+        # Look for the response
+        while True:
+            data = sock.recv(16)
+            print('received {!r}'.format(data))
+            if data:
+                response += data
+            else:
+                print('no more data from', server_address)
+                break
+            
+        print('data received from server: ',response)
+    finally:
+        print('closing socket')
+        sock.close()
+        return response
+
+def POST_MESSAGE(board_num, msg_title, msg_content):
+    # Create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Connect the socket to the port where the server is listening
+    server_address = (server_name, port)
+    print('connecting to {} port {}'.format(*server_address))
+    sock.connect(server_address)
+    
+    response = b''
+    
+    try:
+
+        # Send data
+        message = str.encode('{"request" : "POST_MESSAGE", "board_num" : '+ str(board_num) +' , "title" : "'+msg_title+'", "content" : "'+ msg_content+'"}')
+        print('sending {!r}'.format(message))
+        sock.sendall(message)
+
+        # Look for the response
+        while True:
+            data = sock.recv(16)
+            print('received {!r}'.format(data))
+            if data:
+                response += data
+            else:
+                print('no more data from', server_address)
+                break
+            
+        print('data received from server: ',response)
+    finally:
+        print('closing socket')
+        sock.close()
+        return response
+
+#######################################################################
+################## MAIN CODE ##########################################
+#######################################################################
+
 server_name = 'localhost'
-sock = socket.create_connection((server_name, 12000))
+port = 12000
 
-print('Family  :', families[sock.family])
-print('Type    :', types[sock.type])
-print('Protocol:', protocols[sock.proto])
-print()
+args = sys.argv[1:]
 
-try:
+# Parse commandline arguments
+if (len(args) == 2):
+    server_name = args[0]
+    try:
+        ipaddress.ip_address(server_name)
+        port = int(args[1])
+        if not (1 <= port <= 65535):
+            raise ValueError
+    except:
+        print ('client.py <serverip> <port>')
+        sys.exit(2)
+else:
+    print('no arguments given using default socket')
 
-    # Send data
-    message = b'This is the message.  It will be repeated.'
-    print('sending {!r}'.format(message))
-    sock.sendall(message)
-
-    amount_received = 0
-    amount_expected = len(message)
-
-    while amount_received < amount_expected:
-        data = sock.recv(16)
-        amount_received += len(data)
-        print('received {!r}'.format(data))
-
-finally:
-    print('closing socket')
-    sock.close()
+GET_BOARDS()
