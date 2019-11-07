@@ -1,0 +1,38 @@
+
+
+
+connection from ('127.0.0.1', 4942)
+at Thu 7 Nov 22:10:34 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 4943)
+at Thu 7 Nov 22:10:38 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 4944)
+at Thu 7 Nov 22:10:44 2019
+GET_MESSAGES request
+ERROR : {"request" : "GET_MESSAGES", "valid" : 0, "error" : "404 no messages found"}
+
+
+connection from ('127.0.0.1', 4949)
+at Thu 7 Nov 22:11:17 2019
+GET_MESSAGES request
+ERROR : {"request" : "GET_MESSAGES", "valid" : 0, "error" : "404 no messages found"}
+
+
+connection from ('127.0.0.1', 4952)
+at Thu 7 Nov 22:12:3 2019
+POST_MESSAGE request
+OK : {"request" : "POST_MESSAGE", "valid" : 1}
+
+
+connection from ('127.0.0.1', 4954)
+at Thu 7 Nov 22:12:8 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "main", "messages" : [{"title" : "20191107-221203-i'm_feeling_lucky", "content" : "i found some cookies"}]}
+

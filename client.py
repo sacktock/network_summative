@@ -3,6 +3,7 @@ import sys
 import ipaddress
 import json
 
+
 #######################################################################
 ############# CLIENT FUNCTIONS ########################################
 #######################################################################
@@ -29,7 +30,7 @@ def GET_BOARDS():
             
             elif response['valid'] == 0:
                 print('==== WARINING ====')
-                print('Invalid response received from the server... ')
+                print(response['error']+' error - invalid response received from the server... ')
                 print('==================')
                 retry =input('Try again : [Y/N] ')
                 if retry != 'Y':
@@ -81,25 +82,32 @@ def GET_MESSAGES(board_num):
                 print('Message Board :')
                 print('==== '+ board_title+ ' ====')
                 print()
-                for message in messages:
-                    print('=======================')
+                if messages == []:
                     print()
-                    print(message['title'])
+                    print('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\')
+                    print('////////////EMPTY MESSAGE BOARD\\\\\\\\\\\\\\\\')
+                    print('///////////////////////////////////////////////')
                     print()
-                    print(message['content'])
-                    print()
+                else:
+                    for message in messages:
+                        print('=======================')
+                        print()
+                        print(parse_title(message['title']))
+                        print()
+                        print(message['content'])
+                        print()
                     
                 while True:
-                    action = input('Return to message board : R + [Enter] , Exit : exit + [Enter] ')
+                    action = input('Return to message board : R + [Enter] , Exit : QUIT + [Enter] ')
                     if action == 'R':
                         break
-                    elif action == 'exit':
+                    elif action == 'QUIT':
                         sys.exit()
                 break
                 
             elif response['valid'] == 0:
                 print('==== WARINING ====')
-                print('Invalid response received from the server... ')
+                print(response['error']+' error - invalid response received from the server... ')
                 print('==================')
                 retry =input('Try again : [Y/N] ')
                 if retry != 'Y':
@@ -148,7 +156,7 @@ def POST_MESSAGE(board_num, msg_title, msg_content):
     
             elif response['valid'] == 0:
                 print('==== WARINING ====')
-                print('Invalid response received from the server... ')
+                print(response['error']+' error - invalid response received from the server... ')
                 print('==================')
                 retry =input('Try again : [Y/N] ')
                 if retry != 'Y':
@@ -179,14 +187,20 @@ def POST_MESSAGE(board_num, msg_title, msg_content):
 def server_request(raw_json):
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(10)
 
     # Connect the socket to the port where the server is listening
     server_address = (server_name, port)
     print('connecting to {} port {}'.format(*server_address))
     try:
         sock.connect(server_address)
-    except:
+    except socket.timeout:
+        print('Server timeout ... ')
         return b''
+    except ConnectionRefusedError:
+        print('Connection refused ... ')
+        return b''
+        
     
     response = b''
     
@@ -195,10 +209,13 @@ def server_request(raw_json):
         message = str.encode(raw_json)
         print('sending {!r}'.format(message))
         sock.sendall(message)
+        # start timer
 
         # Look for the response
         while True:
-            data = sock.recv(16)
+            # if > 10 seconds break
+            data = sock.recv(1024)
+            # reset timer
             print('received {!r}'.format(data))
             if data:
                 response += data
@@ -206,14 +223,47 @@ def server_request(raw_json):
                 print('no more data from', server_address)
                 break
             
-        print('data received from server: ',response)
     finally:
         print('closing socket')
         sock.close()
         return response
 
 
+def parse_title(title):
+    try:
+        year = title[:4]
+        month = str(int(title[4:6]))
+        day = str(int(title[6:8]))
+        hour = str(int(title[9:11]))
+        mins = title[11:13]
+        time = ''
+        if int(hour) < 12:
+            time = hour + '.'+mins+'am'
+        else:
+            time = str(int(hour)-12)+'.'+mins+'pm'
+        text = title[16:]
+        text = text.replace('_', ' ')
+        return '"'+text+'" posted at '+time+' on '+day+' '+ get_month(int(month)) + ' '+year
+    except:
+        return ''
     
+def get_month(month):
+    switcher = {
+        1: 'January',
+        2: 'February',
+        3: 'March',
+        4: 'April',
+        5: 'May',
+        6: 'June',
+        7: 'July',
+        8: 'August',
+        9: 'September',
+        10: 'October',
+        11: 'November',
+        12: 'December',
+    }
+    return switcher.get(month, '')
+
 #######################################################################
 ################## MAIN CODE ##########################################
 #######################################################################
@@ -237,19 +287,26 @@ if (len(args) == 2):
 else:
     print('no arguments given using default socket')
     
-board_num = 0
 boards = GET_BOARDS()['boards']
-n = len(boards)
 
 # call GET_BOARDS to get the boards from the server
             
 while True:
     print('==== Message Boards ====')
-    for i in range(0,n):
-        print(str(i+1)+'. '+boards[i])
+    if boards == []:
+        print()
+        print('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\')
+        print('///////////////NO BOARDS\\\\\\\\\\\\\\')
+        print('//////////////////////////////////////')
+        print()
+    else:
+        i = 0
+        for board in boards:
+            i += 1
+            print(str(i)+'. '+board)
     print('========================')
-    user_input = input('View message board : [name] + [Enter], Post a message : post + [Enter], Exit : exit + [Enter] ')
-    if user_input == 'post':
+    user_input = input('View message board : [name] + [Enter], Post a message : POST + [Enter], Exit : QUIT + [Enter] ')
+    if user_input == 'POST':
         print('Posting a message requires : [board_name] [message_title] [message_content]')
         post_board = input('Enter [board_name] ... ')
         msg_title = input('Enter [message_title] ... ')
@@ -263,7 +320,7 @@ while True:
             print('This board does not exist... ')
             print('==================')
             
-    elif user_input == 'exit':
+    elif user_input == 'QUIT':
         sys.exit()
     else:
         try:
