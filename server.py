@@ -16,7 +16,6 @@ def GET_BOARDS():
     return str.encode('{"request" : "GET_BOARDS", "valid" : 1, "number" : '+str(n)+', "boards" : '+string+'}')
 
 def GET_MESSAGES(board_num):
-    # gather the file information and messages for the specified board number
     path = './board/'
     boards = [f.name for f in os.scandir(path) if f.is_dir()]
     try:
@@ -41,9 +40,23 @@ def GET_MESSAGES(board_num):
     return str.encode(string)
 
 def POST_MESSAGE(board_num, msg_title, msg_content):
-    # post the message in a file
-    print('serving valid POST_MESSAGE request')
-    return b'{"request" : "POST_MESSAGE", "valid" : 1}'
+    path = './board/'
+    boards = [f.name for f in os.scandir(path) if f.is_dir()]
+    try:
+        path += boards[board_num] + '/'
+    except IndexError:
+        return b'{"request" : "POST_MESSAGE", "valid" : 0 }'
+
+    files = [f.name for f in os.scandir(path) if f.is_file()]
+    if (msg_title +'.txt') in files:
+        return b'{"request" : "POST_MESSAGE", "valid" : 0 }'
+    try:
+        file = open(path+msg_title+'.txt','w+')
+        file.write(msg_content)
+        file.close()
+        return b'{"request" : "POST_MESSAGE", "valid" : 1}'
+    except:
+        return b'{"request" : "POST_MESSAGE", "valid" : 0 }'
 
 def isInt(s):
     try:
