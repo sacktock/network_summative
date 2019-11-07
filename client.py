@@ -12,7 +12,17 @@ def GET_BOARDS():
     while True:
         response = server_request(message)
         if response:
-            response = json.loads(response)
+            try:
+                response = json.loads(response)
+            except:
+                print('==== WARINING ====')
+                print('Server responded badly... ')
+                print('==================')
+                retry =input('Try again : [Y/N] ')
+                if retry != 'Y':
+                    sys.exit()
+                else:
+                    continue
             if response['valid'] == 1:
                 
                 return response
@@ -53,7 +63,17 @@ def GET_MESSAGES(board_num):
     while True:
         response = server_request(message)
         if response:
-            response = json.loads(response)
+            try:
+                response = json.loads(response)
+            except:
+                print('==== WARINING ====')
+                print('Server responded badly... ')
+                print('==================')
+                retry =input('Try again : [Y/N] ')
+                if retry != 'Y':
+                    break
+                else:
+                    continue
             if response['valid'] == 1:
                 # parse data and display message board
                 board_title = response['board']
@@ -111,7 +131,17 @@ def POST_MESSAGE(board_num, msg_title, msg_content):
     while True:
         response = server_request(message)
         if response:
-            response = json.loads(response)
+            try:
+                response = json.loads(response)
+            except:
+                print('==== WARINING ====')
+                print('Server responded badly... ')
+                print('==================')
+                retry =input('Try again : [Y/N] ')
+                if retry != 'Y':
+                    break
+                else:
+                    continue
             if response['valid'] == 1:
                 print('Message successfully posted ... ')
                 break
