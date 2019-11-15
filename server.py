@@ -4,6 +4,8 @@ import ipaddress
 import json
 import os
 import time
+from _thread import *
+import threading
 
 def GET_BOARDS():
     print('serving valid GET_BOARDS request')
@@ -133,43 +135,7 @@ def isInt(s):
 ################## MAIN CODE ##########################################
 #######################################################################
 
-server_name = 'localhost'
-port = 12000
-
-args = sys.argv[1:]
-
-# Parse commandline arguments
-if (len(args) == 2):
-    server_name = args[0]
-    try:
-        ipaddress.ip_address(server_name)
-        port = int(args[1])
-        if not (1 <= port <= 65535):
-            raise ValueError
-    except:
-        print ('server.py <serverip> <port>')
-        sys.exit(2)
-else:
-    print('no arguments given using default socket')
-
-# Create a TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Bind the socket to the port
-
-server_address = (server_name, port)
-print('starting up on {} port {}'.format(*server_address))
-sock.bind(server_address)
-
-# Listen for incoming connections
-sock.listen(1)
-
-response = b''
-
-while True:
-    # Wait for a connection
-    print('waiting for a connection')
-    connection, client_address = sock.accept()
+def on_new_client(connection, client_address):
     try:
         print('connection from', client_address)
         raw_data = b''
@@ -226,4 +192,46 @@ while True:
     finally:
         # Clean up the connection
         connection.close()
+        
+server_name = 'localhost'
+port = 12000
+
+args = sys.argv[1:]
+
+# Parse commandline arguments
+if (len(args) == 2):
+    server_name = args[0]
+    try:
+        ipaddress.ip_address(server_name)
+        port = int(args[1])
+        if not (1 <= port <= 65535):
+            raise ValueError
+    except:
+        print ('server.py <serverip> <port>')
+        sys.exit(2)
+else:
+    print('no arguments given using default socket')
+
+# Create a TCP/IP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Bind the socket to the port
+
+server_address = (server_name, port)
+print('starting up on {} port {}'.format(*server_address))
+sock.bind(server_address)
+
+# Listen for incoming connections
+sock.listen(1)
+
+response = b''
+
+while True:
+    # Wait for a connection
+    print('waiting for a connection...')
+    connection, client_address = sock.accept()
+    start_new_thread(on_new_client,(connection, client_address))
+        
+
+sock.close()
 

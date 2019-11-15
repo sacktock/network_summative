@@ -36,3 +36,135 @@ at Thu 7 Nov 22:12:8 2019
 GET_MESSAGES request
 OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "main", "messages" : [{"title" : "20191107-221203-i'm_feeling_lucky", "content" : "i found some cookies"}]}
 
+
+connection from ('127.0.0.1', 10668)
+on Fri 15 Nov 15:22:34 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10669)
+on Fri 15 Nov 15:22:44 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 10679)
+on Fri 15 Nov 15:23:38 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10681)
+on Fri 15 Nov 15:23:57 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 10683)
+on Fri 15 Nov 15:24:6 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 10948)
+on Fri 15 Nov 16:0:39 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10956)
+on Fri 15 Nov 16:1:28 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10958)
+on Fri 15 Nov 16:1:37 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10959)
+on Fri 15 Nov 16:1:53 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 10962)
+on Fri 15 Nov 16:2:40 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10963)
+on Fri 15 Nov 16:2:42 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 10968)
+on Fri 15 Nov 16:3:37 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10971)
+on Fri 15 Nov 16:3:42 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 10977)
+on Fri 15 Nov 16:4:27 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10978)
+on Fri 15 Nov 16:4:29 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "main", "messages" : [{"title" : "20191107-221203-i'm_feeling_lucky", "content" : "i found some cookies"}]}
+
+
+connection from ('127.0.0.1', 10981)
+on Fri 15 Nov 16:6:1 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 10984)
+on Fri 15 Nov 16:6:3 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 10987)
+on Fri 15 Nov 16:6:46 2019
+GET_MESSAGES request
+ERROR : {"request" : "GET_MESSAGES", "valid" : 0, "error" : "404 no messages found"}
+
+
+connection from ('127.0.0.1', 10994)
+on Fri 15 Nov 16:9:9 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 11002)
+on Fri 15 Nov 16:10:16 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 11007)
+on Fri 15 Nov 16:10:35 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 11026)
+on Fri 15 Nov 16:14:37 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
