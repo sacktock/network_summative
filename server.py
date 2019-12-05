@@ -147,7 +147,7 @@ def on_new_client(connection, client_address):
         raw_data = b''
         # Receive the data in small chunks and retransmit it
 
-        path = './server.log'
+        path = os.getcwd()+'server.log'
         file = open(path, 'a+')
         file.write('connection from '+ str(client_address)+', ')
         file.write('on '+get_rich_timestamp()+', ')

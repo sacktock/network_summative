@@ -45,3 +45,5 @@ connection from ('127.0.0.1', 59208), on Thu 5 Dec 16:4:0 2019, POST_MESSAGE req
 connection from ('127.0.0.1', 59210), on Thu 5 Dec 16:4:3 2019, GET_MESSAGES request OK
 connection from ('127.0.0.1', 59234), on Thu 5 Dec 16:7:52 2019, GET_BAORDS request OK
 connection from ('127.0.0.1', 32892), on Thu 5 Dec 16:24:17 2019, GET_BAORDS request OK
+connection from ('127.0.0.1', 23428), on Thu 5 Dec 16:37:16 2019, GET_BAORDS request OK
+connection from ('127.0.0.1', 23429), on Thu 5 Dec 16:37:20 2019, GET_MESSAGES request OK
