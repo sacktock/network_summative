@@ -8,39 +8,46 @@ import threading
 
 def GET_BOARDS():
     print('serving valid GET_BOARDS request')
+    # scan the board folder for subfolders
     path = './board/'
     boards = [f.name for f in os.scandir(path) if f.is_dir()]
     string = '['
     if boards != []:
+        # construct json response
         for board in boards:
             string += '"'+board+'", '
         string = string[:-2] + ']'
         return str.encode('{"request" : "GET_BOARDS", "valid" : 1, "boards" : '+string+'}')
     else:
+        # no message boards
         return b'{"request" : "GET_BOARDS", "valid" : 0, "error" : "404 no message boards found"}'
 
 def GET_MESSAGES(board_num):
+    # scan the board folder for subfolders
     path = './board/'
     boards = [f.name for f in os.scandir(path) if f.is_dir()]
+    # check if the board number is valid
     try:
         if board_num < 0:
             raise IndexError
         path += boards[board_num] + '/'
         print('serving valid GET_MESSAGES request') 
     except IndexError:
+        # invalid board number
         return b'{"request" : "GET_MESSAGES", "valid" : 0, "error" : "404 message board does not exist" }'
-       
+    # scan the subfolder for files   
     files = [f.path for f in os.scandir(path) if f.is_file()]
     files = files[::-1]
+    # get the most 100 recent messages
     if len(files) > 100:
         files = files[:100]
+    # get the message content    
     messages = []
-    
     for file in files:
         file = open(file, 'r')
         messages.append((os.path.basename(file.name),file.read()))
         file.close()
-
+    # construct the json response
     string = '{"request" : "GET_MESSAGES", "valid" : 1, "board" : "'+boards[board_num]+'", "messages" : ['
     if messages != []:
         for message in messages:
@@ -48,35 +55,44 @@ def GET_MESSAGES(board_num):
         string = string[:-2]+']}'
         return str.encode(string)
     else:
+        # no messages in the specified board
         return str.encode('{"request" : "GET_MESSAGES", "valid" : 0, "error" : "404 no messages found"}')
 
 def POST_MESSAGE(board_num, msg_title, msg_content):
+    # scan the board folder for subfolders
     path = './board/'
     boards = [f.name for f in os.scandir(path) if f.is_dir()]
+    # check if the board number is valid
     try:
         if board_num < 0:
             raise IndexError
         path += boards[board_num] + '/'
     except IndexError:
+        # invalid board number
         return b'{"request" : "POST_MESSAGE", "valid" : 0, "error" : "404 message board does not exist" }'
-
+    # scan the subfolder for files
     files = [f.name for f in os.scandir(path) if f.is_file()]
+    # construct the filename
     msg_title = msg_title.rstrip()
     msg_title = msg_title.lstrip()
     msg_title = msg_title.replace(" ", "_")
     msg_title = get_timestamp()+'-'+msg_title
     if msg_title in files:
+        # file already exists error
         return b'{"request" : "POST_MESSAGE", "valid" : 0, "error" : "409 conflicting filename" }'
-    
     try:
+        # write to the file
         file = open(path+msg_title,'w+')
         file.write(msg_content)
         file.close()
+        # return confirmation response
         return b'{"request" : "POST_MESSAGE", "valid" : 1}'
     except:
+        # error occured return this response
         return b'{"request" : "POST_MESSAGE", "valid" : 0, "error" : "500 internal server failure" }'
 
 def get_timestamp():
+    # construct a timestamp for the filename
     t = time.gmtime()
     timestamp = str(t.tm_year)
     if t.tm_mon < 10:
@@ -137,55 +153,68 @@ def isInt(s):
         return True
     except ValueError:
         return False
-#######################################################################
-################## MAIN CODE ##########################################
-#######################################################################
 
 def on_new_client(connection, client_address):
+    # server a client request
     try:
         print('connection from', client_address)
         raw_data = b''
-        # Receive the data in small chunks and retransmit it
-
+        # open the .log file
         path = os.getcwd()+'server.log'
         file = open(path, 'a+')
         file.write('connection from '+ str(client_address)+', ')
         file.write('on '+get_rich_timestamp()+', ')
-        
+
+        # receive the data
         while True:
             data = connection.recv(1024)
             print('received {!r}'.format(data))
+            # construct the request
             if data:
                 raw_data += data
             if data.decode()[-1] =='}':
                 print('end of data from', client_address)
                 break
             
-        # process the raw_data
+        # parse the response to a string
         raw_json = raw_data.decode()
+            
         try:
             params = json.loads(raw_json)
         
             if params['request'] == 'GET_BOARDS':
-                file.write('GET_BAORDS request ')
+                # write to .log file
+                file.write('GET_BOARDS request ')
+                # serve a GET_BOARDS request
                 response = GET_BOARDS()
             elif params['request'] == 'GET_MESSAGES':
+                # write to .log file
                 file.write('GET_MESSAGES request ')
+                # check the request is a valid GET_MESSAGES request
                 if ('board_num' in params) and isInt(params['board_num']):
+                    # serve a GET_MESSAGES request
                     response = GET_MESSAGES(params['board_num'])
                 else:
+                    # invalid request respond with error
                     response = b'{"request" : "GET_MESSAGES", "valid" : 0, "error" : "400 bad request"}'
             elif params['request'] == 'POST_MESSAGE':
+                # write to .log file
                 file.write('POST_MESSAGE request ')
+                # check the request is a valid POST_MESSAGE request
                 if ('board_num' in params) and isInt(params['board_num']) and ('title' in params) and ('content' in params):
+                    # server a POST_MESSAGE request
                     response = POST_MESSAGE(params['board_num'], params['title'], params['content'])
                 else:
+                    # invalid request respond with error
                     response = b'{"request" : "POST_MESSAGE", "valid" : 0, "error" : "400 bad request"}'
             else:
+                # unknown request respond with error
                 response = b'{"request" : "UNKNOWN_REQUEST", "valid" : 0, "error" : "400 bad request"}'
         except:
+            # unknown request respond with error
             response = b'{"request" : "UNKNOWN_REQUEST", "valid" : 0, "error" : "400 bad request"}'
 
+        # check if error has occured and write to .log file
         if b'error' in response:
             file.write('ERROR')
             print('error occured ... ')
@@ -193,12 +222,13 @@ def on_new_client(connection, client_address):
             file.write('OK')
         file.write('\n')
         file.close()
+        # close .log file
+        # send response to the client
         print('sending data back to the client')
         print(response)
         connection.sendall(response)
-        
     finally:
-        # Clean up the connection
+        # clean up the connection
         connection.close()
         
 server_name = 'localhost'
@@ -206,7 +236,7 @@ port = 12000
 
 args = sys.argv[1:]
 
-# Parse commandline arguments
+# evaluate the commandline arguments
 if (len(args) != 2):
     print ('server.py usage: python server.py <serverip> <port>')
     sys.exit(2)
@@ -214,49 +244,60 @@ else:
     server_name = str(args[0])
     port = int(args[1])
 
-# Create a TCP/IP socket
+# create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Bind the socket to the port
+# bind the socket to the port
 
 server_address = (server_name, port)
 print('starting up on {} port {}'.format(*server_address))
 try:
     sock.bind(server_address)
 except:
-    print('error with socket '+str(server_address)+ ' ... unavailable/busy port ... ')
+    # socket unavailable/busy
+    print('error with socket '+str(server_address)+ ' ... unavailable/busy port... ')
+    sock.close()
     sys.exit(2)
 
-# checking if there are any message boards
-path = './board/'
+# check if there are any message boards
 try:
+    # scan the board sub folder
+    path = './board/'
     boards = [f.name for f in os.scandir(path) if f.is_dir()]
     if boards == []:
+        # exit if no message boards
         print('error: no message boards ... ')
+        sock.close()
         sys.exit(2)
 except:
+    # exit if no board folder
     print('error: board folder not found ...')
+    sock.close()
     sys.exit(2)
 
     
-# Listen for incoming connections
+# listen for incoming connections
 sock.listen(1)
 
 response = b''
 
 while True:
-    # Wait for a connection
+    # wait for a connection
     print('waiting for a connection...')
     try:
         connection, client_address = sock.accept()
     except KeyboardInterrupt:
         print('\nkeyboard interrupt ... ')
+        sock.close()
         sys.exit(2)
     try:
+        # serve the client request on a new thread
         start_new_thread(on_new_client,(connection, client_address))
     except:
+        # no threads left
         print("couldn't create a new thread...")
+        sock.close()
+        sys.exit(2)
         
-
 sock.close()
 

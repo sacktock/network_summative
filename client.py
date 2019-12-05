@@ -3,54 +3,64 @@ import sys
 import json
 
 
-#######################################################################
-############# CLIENT FUNCTIONS ########################################
-#######################################################################
+# Client functions
 
 def GET_BOARDS():
+    # construct json message
     message = '{"request" : "GET_BOARDS"}'
     while True:
+        # make server request
         response = server_request(message)
         if response:
+            # parse json response
             try:
                 response = json.loads(response.decode())
             except:
+                # server doesn't respond with a json message
                 print('server responded badly ... ')
                 print('exiting ... ')
                 sys.exit()
             if response['valid'] == 1:
+                # valid response received
                 return response
             elif response['valid'] == 0:
+                # server side error
                 print(response['error']+' error ... ')
                 retry =input('Try again : [Y/N] ')
                 print('exiting ... ')
                 sys.exit()
             else:
+                # server responded with unexpected json
                 print('server responded badly no valid bit ... ')
                 print('exiting ... ')
                 sys.exit()
-                
         else:
+            # server didn't respond with anything
             print('nothing received from the server ... ')
             print('exiting ... ')
             sys.exit()
 
 def GET_MESSAGES(board_num):
+    # construct json message
     message = '{"request" : "GET_MESSAGES", "board_num" : '+ str(board_num) +'}'
     while True:
+        # make server request
         response = server_request(message)
         if response:
             try:
+                # parse json response
                 response = json.loads(response.decode())
             except:
+                # server doesn't respond with a json message
                 print('server responded badly ... ')
                 print('returning to message boards ... ')
                 break
             
             if response['valid'] == 1:
-                # parse data and display message board
+                # valid response received
+                # extract data and display messages
                 board_title = response['board']
-                messages = response['messages'] # messages is a list of dicts
+                messages = response['messages'] 
                 print()
                 print('Message Board :')
                 print()
@@ -73,6 +83,7 @@ def GET_MESSAGES(board_num):
                 print('=========='+'='*(len(board_title)))
                 print()
                 while True:
+                    # wait for user input
                     action = input('Return to message boards : R + [Enter] , Exit : QUIT + [Enter] ')
                     if action == 'R':
                         print('returning to message boards ... ')
@@ -83,44 +94,53 @@ def GET_MESSAGES(board_num):
                 break
                 
             elif response['valid'] == 0:
+                # server side error
                 print(response['error']+' error ... ')
                 print('returning to message boards ... ')
                 break
             else:
+                # server responded with unexpected json
                 print('server responded badly ... ')
                 print('returning to message boards ... ')
                 break
         else:
+            # server didn't respond with anything
             print('nothing received from the server ... ')
             print('returning to message boards ... ')
             break
     return 
 
 def POST_MESSAGE(board_num, msg_title, msg_content):
+    # construct json message
     message = '{"request" : "POST_MESSAGE", "board_num" : '+ str(board_num) +' , "title" : "'+msg_title+'", "content" : "'+ msg_content+'"}'
     while True:
+        # make server request
         response = server_request(message)
         if response:
             try:
+                # parse json response
                 response = json.loads(response.decode())
             except:
+                # server doesn't respond with a json message
                 print('server responded badly ... ')
                 print('returning to message boards ... ')
                 break
-
             if response['valid'] == 1:
+                # valid response received
                 print('message successfully posted ... ')
                 break
-    
             elif response['valid'] == 0:
+                # server side error
                 print(response['error']+' error ... ')
                 print('returning to message boards ... ')
                 break
             else:
+                # server responded with unexpected json
                 print('server responded badly ... ')
                 print('returning to message boards ... ')
                 break
         else:
+            # server didn't respond with anything
             print('nothing received from the server ... ')
             print('returning to message boards ... ')
             break
@@ -128,44 +148,43 @@ def POST_MESSAGE(board_num, msg_title, msg_content):
 
 
 def server_request(raw_json):
-    # Create a TCP/IP socket
+    # create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(10)
 
-    # Connect the socket to the port where the server is listening
+    #cConnect the socket to the port where the server is listening
     server_address = (server_name, port)
     print('connecting to {} port {}'.format(*server_address))
     try:
         sock.connect(server_address)
     except socket.timeout:
+        # server timeout
         sock.close()
         print('server timeout ... ')
         print('exiting ... ')
         sys.exit()
         return b''
     except ConnectionRefusedError:
+        # server is unavailable
         sock.close()
         print('server is unavailable ... ')
         print('exiting ... ')
         sys.exit()
         return b''
-        
     
     response = b''
     
     try:
-        # Send data
+        # send message
         message = str.encode(raw_json)
         print('sending {!r}'.format(message))
         sock.sendall(message)
-        # start timer
 
-        # Look for the response
+        # look for the response
         while True:
-            # if > 10 seconds break
             data = sock.recv(1024)
-            # reset timer
             print('received {!r}'.format(data))
+            # construct the server response
             if data:
                 response += data
             else:
@@ -173,12 +192,15 @@ def server_request(raw_json):
                 break
             
     finally:
+        # close the connection
         print('closing socket')
         sock.close()
+        # return the server response
         return response
 
 
 def parse_title(title):
+    # converts the  given filename to a displayable title
     try:
         year = title[:4]
         month = str(int(title[4:6]))
@@ -213,28 +235,25 @@ def get_month(month):
     }
     return switcher.get(month, '')
 
-#######################################################################
-################## MAIN CODE ##########################################
-#######################################################################
-
+# Main code
 server_name = 'localhost'
 port = 12000
 
 args = sys.argv[1:]
 
-# Parse commandline arguments
+# evaluate the commandline arguments
 if (len(args) != 2):
     print ('client.py usage: python client.py <serverip> <port>')
     sys.exit(2)
 else:
     server_name = str(args[0])
     port = int(args[1])
-    
-boards = GET_BOARDS()['boards']
 
-# call GET_BOARDS to get the boards from the server
-            
+# call GET_BOARDS to get the boards from the server 
+boards = GET_BOARDS()['boards']
+           
 while True:
+    # display the message boards
     print()
     print('==== Message Boards ====')
     print()
@@ -250,28 +269,35 @@ while True:
     print()
     print('========================')
     print()
+    # wait for user input
     user_input = input('View message board : [number] + [Enter], Post a message : POST + [Enter], Exit : QUIT + [Enter] ')
     if user_input == 'POST':
+        # start the POST_MESSAGE procedure
         print('Posting a message requires : [board_number] [message_title] [message_content]')
+        # get user input
         post_board = input('Enter [board_number] ... ')
         msg_title = input('Enter [message_title] ... ')
         msg_content = input('Enter [message_content] ... ')
 
+        # try parse the board number
         try:
             board_num = int(post_board)-1
             response = POST_MESSAGE(board_num, msg_title, msg_content)
         except ValueError:
+            # user input is not a number
             print('invalid boards number ... ')
         print('returning to message boards ... ')
-            
+        
     elif user_input == 'QUIT':
         print('exiting ... ')
         sys.exit()
     else:
+        # try parse the board number
         try:
             board_num = int(user_input) -1
             GET_MESSAGES(board_num)
         except ValueError:
+            # user input is not a number
             print('invalid board number ... ')
             print('returning to message boards ... ')
             
