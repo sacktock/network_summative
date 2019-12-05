@@ -168,3 +168,27 @@ on Fri 15 Nov 16:14:37 2019
 GET_BAORDS request
 OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
 
+
+connection from ('127.0.0.1', 5290)
+on Wed 4 Dec 16:38:21 2019
+GET_BAORDS request
+OK : {"request" : "GET_BOARDS", "valid" : 1, "boards" : ["home", "main", "python"]}
+
+
+connection from ('127.0.0.1', 5293)
+on Wed 4 Dec 16:38:37 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "home", "messages" : [{"title" : "20191107-215425-how_to_make_risotto", "content" : "you make risotto by slowly adding stock to the rice and soakint it up"}]}
+
+
+connection from ('127.0.0.1', 5295)
+on Wed 4 Dec 16:38:45 2019
+GET_MESSAGES request
+OK : {"request" : "GET_MESSAGES", "valid" : 1, "board" : "main", "messages" : [{"title" : "20191107-221203-i'm_feeling_lucky", "content" : "i found some cookies"}]}
+
+
+connection from ('127.0.0.1', 5296)
+on Wed 4 Dec 16:38:48 2019
+GET_MESSAGES request
+ERROR : {"request" : "GET_MESSAGES", "valid" : 0, "error" : "404 no messages found"}
+

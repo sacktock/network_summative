@@ -1,6 +1,5 @@
 import socket
 import sys
-import ipaddress
 import json
 import os
 import time
@@ -158,24 +157,27 @@ def on_new_client(connection, client_address):
             
         # process the raw_data
         raw_json = raw_data.decode()
-        params = json.loads(raw_json)
+        try:
+            params = json.loads(raw_json)
         
-        if params['request'] == 'GET_BOARDS':
-            file.write('GET_BAORDS request\n')
-            response = GET_BOARDS()
-        elif params['request'] == 'GET_MESSAGES':
-            file.write('GET_MESSAGES request\n')
-            if ('board_num' in params) and isInt(params['board_num']):
-                response = GET_MESSAGES(params['board_num'])
+            if params['request'] == 'GET_BOARDS':
+                file.write('GET_BAORDS request\n')
+                response = GET_BOARDS()
+            elif params['request'] == 'GET_MESSAGES':
+                file.write('GET_MESSAGES request\n')
+                if ('board_num' in params) and isInt(params['board_num']):
+                    response = GET_MESSAGES(params['board_num'])
+                else:
+                    response = b'{"request" : "GET_MESSAGES", "valid" : 0, "error" : "400 bad request"}'
+            elif params['request'] == 'POST_MESSAGE':
+                file.write('POST_MESSAGE request\n')
+                if ('board_num' in params) and isInt(params['board_num']) and ('title' in params) and ('content' in params):
+                    response = POST_MESSAGE(params['board_num'], params['title'], params['content'])
+                else:
+                    response = b'{"request" : "POST_MESSAGE", "valid" : 0, "error" : "400 bad request"}'
             else:
-                response = b'{"request" : "GET_MESSAGES", "valid" : 0, "error" : "400 bad request"}'
-        elif params['request'] == 'POST_MESSAGE':
-            file.write('POST_MESSAGE request\n')
-            if ('board_num' in params) and isInt(params['board_num']) and ('title' in params) and ('content' in params):
-                response = POST_MESSAGE(params['board_num'], params['title'], params['content'])
-            else:
-                response = b'{"request" : "POST_MESSAGE", "valid" : 0, "error" : "400 bad request"}'
-        else:
+                response = b'{"request" : "UNKNOWN_REQUEST", "valid" : 0, "error" : "400 bad request"}'
+        except:
             response = b'{"request" : "UNKNOWN_REQUEST", "valid" : 0, "error" : "400 bad request"}'
 
         if b'error' in response:
@@ -199,18 +201,12 @@ port = 12000
 args = sys.argv[1:]
 
 # Parse commandline arguments
-if (len(args) == 2):
-    server_name = args[0]
-    try:
-        ipaddress.ip_address(server_name)
-        port = int(args[1])
-        if not (1 <= port <= 65535):
-            raise ValueError
-    except:
-        print ('server.py <serverip> <port>')
-        sys.exit(2)
+if (len(args) != 2):
+    print ('server.py usage: python server.py <serverip> <port>')
+    sys.exit(2)
 else:
-    print('no arguments given using default socket')
+    server_name = str(args[0])
+    port = int(args[1])
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -219,8 +215,20 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 server_address = (server_name, port)
 print('starting up on {} port {}'.format(*server_address))
-sock.bind(server_address)
+try:
+    sock.bind(server_address)
+except:
+    print('error with socket '+str(server_address)+ ' ... unavailable/busy port ... ')
+    sys.exit(2)
 
+# checking if there are any message boards
+path = './board/'
+boards = [f.name for f in os.scandir(path) if f.is_dir()]
+if boards == []:
+    print('error: no message boards ... ')
+    sys.exit(2)
+
+    
 # Listen for incoming connections
 sock.listen(1)
 
@@ -229,8 +237,15 @@ response = b''
 while True:
     # Wait for a connection
     print('waiting for a connection...')
-    connection, client_address = sock.accept()
-    start_new_thread(on_new_client,(connection, client_address))
+    try:
+        connection, client_address = sock.accept()
+    except KeyboardInterrupt:
+        print('\nkeyboard interrupt ... ')
+        sys.exit(2)
+    try:
+        start_new_thread(on_new_client,(connection, client_address))
+    except:
+        print("couldn't create a new thread...")
         
 
 sock.close()

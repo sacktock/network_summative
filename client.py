@@ -1,6 +1,5 @@
 import socket
 import sys
-import ipaddress
 import json
 
 
@@ -24,7 +23,6 @@ def GET_BOARDS():
                 else:
                     continue
             if response['valid'] == 1:
-                
                 return response
             
             elif response['valid'] == 0:
@@ -267,18 +265,12 @@ port = 12000
 args = sys.argv[1:]
 
 # Parse commandline arguments
-if (len(args) == 2):
-    server_name = args[0]
-    try:
-        ipaddress.ip_address(server_name)
-        port = int(args[1])
-        if not (1 <= port <= 65535):
-            raise ValueError
-    except:
-        print ('client.py <serverip> <port>')
-        sys.exit(2)
+if (len(args) != 2):
+    print ('client.py usage: python client.py <serverip> <port>')
+    sys.exit(2)
 else:
-    print('incorrect number of arguments ... using default arguments')
+    server_name = str(args[0])
+    port = int(args[1])
     
 boards = GET_BOARDS()['boards']
 
