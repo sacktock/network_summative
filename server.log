@@ -13,3 +13,9 @@ connection from ('127.0.0.1', 22586), on Thu 5 Dec 12:10:1 2019, GET_MESSAGES re
 connection from ('127.0.0.1', 22587), on Thu 5 Dec 12:10:9 2019, GET_MESSAGES request ERROR
 connection from ('127.0.0.1', 22594), on Thu 5 Dec 12:12:24 2019, GET_MESSAGES request OK
 connection from ('127.0.0.1', 22596), on Thu 5 Dec 12:12:42 2019, GET_MESSAGES request OK
+connection from ('127.0.0.1', 22729), on Thu 5 Dec 12:42:59 2019, GET_BAORDS request OK
+connection from ('127.0.0.1', 22730), on Thu 5 Dec 12:43:10 2019, GET_MESSAGES request OK
+connection from ('127.0.0.1', 22732), on Thu 5 Dec 12:43:34 2019, POST_MESSAGE request OK
+connection from ('127.0.0.1', 22733), on Thu 5 Dec 12:43:39 2019, GET_MESSAGES request OK
+connection from ('127.0.0.1', 22836), on Thu 5 Dec 12:45:52 2019, GET_BAORDS request OK
+connection from ('127.0.0.1', 22837), on Thu 5 Dec 12:45:58 2019, GET_MESSAGES request OK

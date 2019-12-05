@@ -31,6 +31,7 @@ def GET_MESSAGES(board_num):
         return b'{"request" : "GET_MESSAGES", "valid" : 0, "error" : "404 message board does not exist" }'
        
     files = [f.path for f in os.scandir(path) if f.is_file()]
+    files = files[::-1]
     if len(files) > 100:
         files = files[:100]
     messages = []
@@ -228,9 +229,13 @@ except:
 
 # checking if there are any message boards
 path = './board/'
-boards = [f.name for f in os.scandir(path) if f.is_dir()]
-if boards == []:
-    print('error: no message boards ... ')
+try:
+    boards = [f.name for f in os.scandir(path) if f.is_dir()]
+    if boards == []:
+        print('error: no message boards ... ')
+        sys.exit(2)
+except:
+    print('error: board folder not found ...')
     sys.exit(2)
 
     
