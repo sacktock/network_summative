@@ -16,42 +16,25 @@ def GET_BOARDS():
                 response = json.loads(response)
             except:
                 print('server responded badly ... ')
-                retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('exiting ... ')
-                    sys.exit()
-                else:
-                    continue
+                print('exiting ... ')
+                sys.exit()
             if response['valid'] == 1:
                 return response
             
             elif response['valid'] == 0:
-                print(response['error']+' error - invalid response received from the server ... ')
+                print(response['error']+' error ... ')
                 retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('exiting ... ')
-                    sys.exit()
-                else:
-                    continue
-            else:
-                print('server responded badly ... ')
-                retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('exiting ... ')
-                    sys.exit()
-                else:
-                    continue
-                
-        else:
-            print('no response received from the server ... ')
-            retry =input('Try again : [Y/N] ')
-            if retry != 'Y':
                 print('exiting ... ')
                 sys.exit()
             else:
-                continue
-    
-    return 
+                print('server responded badly ... ')
+                print('exiting ... ')
+                sys.exit()
+                
+        else:
+            print('nothing received from the server ... ')
+            print('exiting ... ')
+            sys.exit()
 
 def GET_MESSAGES(board_num):
     message = '{"request" : "GET_MESSAGES", "board_num" : '+ str(board_num) +'}'
@@ -62,12 +45,9 @@ def GET_MESSAGES(board_num):
                 response = json.loads(response)
             except:
                 print('server responded badly ... ')
-                retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('returning to message boards ... ')
-                    break
-                else:
-                    continue
+                print('returning to message boards ... ')
+                break
+            
             if response['valid'] == 1:
                 # parse data and display message board
                 board_title = response['board']
@@ -104,29 +84,17 @@ def GET_MESSAGES(board_num):
                 break
                 
             elif response['valid'] == 0:
-                print(response['error']+' error - invalid response received from the server ... ')
-                retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('returning to message boards ... ')
-                    break
-                else:
-                    continue
-            else:
-                print('server responded badly ... ')
-                retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('returning to message boards ... ')
-                    break
-                else:
-                    continue
-        else:
-            print('no response received from the server ... ')
-            retry =input('Try again : [Y/N] ')
-            if retry != 'Y':
+                print(response['error']+' error ... ')
                 print('returning to message boards ... ')
                 break
             else:
-                continue
+                print('server responded badly ... ')
+                print('returning to message boards ... ')
+                break
+        else:
+            print('nothing received from the server ... ')
+            print('returning to message boards ... ')
+            break
     return 
 
 def POST_MESSAGE(board_num, msg_title, msg_content):
@@ -138,40 +106,25 @@ def POST_MESSAGE(board_num, msg_title, msg_content):
                 response = json.loads(response)
             except:
                 print('server responded badly ... ')
-                retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('returning to message boards ... ')
-                    break
-                else:
-                    continue
+                print('returning to message boards ... ')
+                break
+
             if response['valid'] == 1:
                 print('message successfully posted ... ')
                 break
     
             elif response['valid'] == 0:
-                print(response['error']+' error - invalid response received from the server ... ')
-                retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('returning to message boards ... ')
-                    break
-                else:
-                    continue
-            else:
-                print('server responded badly ... ')
-                retry =input('Try again : [Y/N] ')
-                if retry != 'Y':
-                    print('returning to message boards ... ')
-                    break
-                else:
-                    continue
-        else:
-            print('no response received from the server ... ')
-            retry =input('Try again : [Y/N] ')
-            if retry != 'Y':
+                print(response['error']+' error ... ')
                 print('returning to message boards ... ')
                 break
             else:
-                continue
+                print('server responded badly ... ')
+                print('returning to message boards ... ')
+                break
+        else:
+            print('nothing received from the server ... ')
+            print('returning to message boards ... ')
+            break
     return 
 
 
@@ -186,10 +139,16 @@ def server_request(raw_json):
     try:
         sock.connect(server_address)
     except socket.timeout:
+        sock.close()
         print('server timeout ... ')
+        print('exiting ... ')
+        sys.exit()
         return b''
     except ConnectionRefusedError:
+        sock.close()
         print('server is unavailable ... ')
+        print('exiting ... ')
+        sys.exit()
         return b''
         
     
@@ -292,18 +251,18 @@ while True:
     print()
     print('========================')
     print()
-    user_input = input('View message board : [name] + [Enter], Post a message : POST + [Enter], Exit : QUIT + [Enter] ')
+    user_input = input('View message board : [number] + [Enter], Post a message : POST + [Enter], Exit : QUIT + [Enter] ')
     if user_input == 'POST':
-        print('Posting a message requires : [board_name] [message_title] [message_content]')
-        post_board = input('Enter [board_name] ... ')
+        print('Posting a message requires : [board_number] [message_title] [message_content]')
+        post_board = input('Enter [board_number] ... ')
         msg_title = input('Enter [message_title] ... ')
         msg_content = input('Enter [message_content] ... ')
 
         try:
-            board_num = boards.index(post_board)
+            board_num = int(post_board)-1
             response = POST_MESSAGE(board_num, msg_title, msg_content)
         except ValueError:
-            print('this board does not exist ... ')
+            print('invalid boards number ... ')
         print('returning to message boards ... ')
             
     elif user_input == 'QUIT':
@@ -311,10 +270,10 @@ while True:
         sys.exit()
     else:
         try:
-            board_num = boards.index(user_input)
+            board_num = int(user_input) -1
             GET_MESSAGES(board_num)
         except ValueError:
-            print('this board does not exist ... ')
+            print('invalid board number ... ')
             print('returning to message boards ... ')
             
 

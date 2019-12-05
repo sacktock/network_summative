@@ -23,12 +23,16 @@ def GET_MESSAGES(board_num):
     path = './board/'
     boards = [f.name for f in os.scandir(path) if f.is_dir()]
     try:
+        if board_num < 0:
+            raise IndexError
         path += boards[board_num] + '/'
         print('serving valid GET_MESSAGES request') 
     except IndexError:
         return b'{"request" : "GET_MESSAGES", "valid" : 0, "error" : "404 message board does not exist" }'
        
     files = [f.path for f in os.scandir(path) if f.is_file()]
+    if len(files) > 100:
+        files = files[:100]
     messages = []
     
     for file in files:
@@ -49,6 +53,8 @@ def POST_MESSAGE(board_num, msg_title, msg_content):
     path = './board/'
     boards = [f.name for f in os.scandir(path) if f.is_dir()]
     try:
+        if board_num < 0:
+            raise IndexError
         path += boards[board_num] + '/'
     except IndexError:
         return b'{"request" : "POST_MESSAGE", "valid" : 0, "error" : "404 message board does not exist" }'
@@ -142,9 +148,8 @@ def on_new_client(connection, client_address):
 
         path = './server.log'
         file = open(path, 'a+')
-        file.write('\n')
-        file.write('connection from '+ str(client_address)+'\n')
-        file.write('on '+get_rich_timestamp()+'\n')
+        file.write('connection from '+ str(client_address)+', ')
+        file.write('on '+get_rich_timestamp()+', ')
         
         while True:
             data = connection.recv(1024)
@@ -161,16 +166,16 @@ def on_new_client(connection, client_address):
             params = json.loads(raw_json)
         
             if params['request'] == 'GET_BOARDS':
-                file.write('GET_BAORDS request\n')
+                file.write('GET_BAORDS request ')
                 response = GET_BOARDS()
             elif params['request'] == 'GET_MESSAGES':
-                file.write('GET_MESSAGES request\n')
+                file.write('GET_MESSAGES request ')
                 if ('board_num' in params) and isInt(params['board_num']):
                     response = GET_MESSAGES(params['board_num'])
                 else:
                     response = b'{"request" : "GET_MESSAGES", "valid" : 0, "error" : "400 bad request"}'
             elif params['request'] == 'POST_MESSAGE':
-                file.write('POST_MESSAGE request\n')
+                file.write('POST_MESSAGE request ')
                 if ('board_num' in params) and isInt(params['board_num']) and ('title' in params) and ('content' in params):
                     response = POST_MESSAGE(params['board_num'], params['title'], params['content'])
                 else:
@@ -181,10 +186,10 @@ def on_new_client(connection, client_address):
             response = b'{"request" : "UNKNOWN_REQUEST", "valid" : 0, "error" : "400 bad request"}'
 
         if b'error' in response:
-            file.write('ERROR : '+response.decode()+'\n')
+            file.write('ERROR')
             print('error occured ... ')
         else:
-            file.write('OK : '+response.decode()+'\n')
+            file.write('OK')
         file.write('\n')
         file.close()
         print('sending data back to the client')
