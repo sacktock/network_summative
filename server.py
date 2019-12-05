@@ -160,10 +160,10 @@ def on_new_client(connection, client_address):
         print('connection from', client_address)
         raw_data = b''
         # open the .log file
-        path = os.getcwd()+'server.log'
+        path = './server.log'
         file = open(path, 'a+')
-        file.write('connection from '+ str(client_address)+', ')
-        file.write('on '+get_rich_timestamp()+', ')
+        file.write('connection from '+ str(client_address)+'\t')
+        file.write('on '+get_rich_timestamp()+'\t')
 
         # receive the data
         while True:
@@ -184,12 +184,12 @@ def on_new_client(connection, client_address):
         
             if params['request'] == 'GET_BOARDS':
                 # write to .log file
-                file.write('GET_BOARDS request ')
+                file.write('GET_BOARDS request\t')
                 # serve a GET_BOARDS request
                 response = GET_BOARDS()
             elif params['request'] == 'GET_MESSAGES':
                 # write to .log file
-                file.write('GET_MESSAGES request ')
+                file.write('GET_MESSAGES request\t')
                 # check the request is a valid GET_MESSAGES request
                 if ('board_num' in params) and isInt(params['board_num']):
                     # serve a GET_MESSAGES request
@@ -199,7 +199,7 @@ def on_new_client(connection, client_address):
                     response = b'{"request" : "GET_MESSAGES", "valid" : 0, "error" : "400 bad request"}'
             elif params['request'] == 'POST_MESSAGE':
                 # write to .log file
-                file.write('POST_MESSAGE request ')
+                file.write('POST_MESSAGE request\t')
                 # check the request is a valid POST_MESSAGE request
                 if ('board_num' in params) and isInt(params['board_num']) and ('title' in params) and ('content' in params):
                     # server a POST_MESSAGE request
@@ -208,9 +208,13 @@ def on_new_client(connection, client_address):
                     # invalid request respond with error
                     response = b'{"request" : "POST_MESSAGE", "valid" : 0, "error" : "400 bad request"}'
             else:
+                # write to .log file
+                file.write('UNKNOWN_REQUEST request\t')
                 # unknown request respond with error
                 response = b'{"request" : "UNKNOWN_REQUEST", "valid" : 0, "error" : "400 bad request"}'
         except:
+            # write to .log file
+            file.write('UNKNOWN_REQUEST request\t')
             # unknown request respond with error
             response = b'{"request" : "UNKNOWN_REQUEST", "valid" : 0, "error" : "400 bad request"}'
 
