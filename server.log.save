@@ -21,8 +21,7 @@ connection from ('127.0.0.1', 22836), on Thu 5 Dec 12:45:52 2019, GET_BAORDS req
 connection from ('127.0.0.1', 22837), on Thu 5 Dec 12:45:58 2019, GET_MESSAGES request OK
 connection from ('127.0.0.1', 53580), on Thu 5 Dec 15:24:9 2019, GET_BAORDS request OK
 connection from ('127.0.0.1', 53582), on Thu 5 Dec 15:24:16 2019, GET_BAORDS request OK
-connection from ('127.0.0.1', 53584), on Thu 5 Dec 15:24:55 2019, GET_BAORDS request OK
-connection from ('127.0.0.1', 53590), on Thu 5 Dec 15:27:32 2019, GET_BAORDS request OK
+connection from ('127.0.0.1', 53584), on Thu 5 Dec 15:24:55 2019, GET_BAORDS request Oconnection from ('127.0.0.1', 53590), on Thu 5 Dec 15:27:32 2019, GET_BAORDS request OK
 connection from ('127.0.0.1', 53592), on Thu 5 Dec 15:28:37 2019, GET_BAORDS request OK
 connection from ('127.0.0.1', 53594), on Thu 5 Dec 15:28:43 2019, GET_MESSAGES request OK
 connection from ('127.0.0.1', 53624), on Thu 5 Dec 15:30:14 2019, GET_BAORDS request OK
@@ -44,4 +43,3 @@ connection from ('127.0.0.1', 59196), on Thu 5 Dec 16:3:44 2019, GET_MESSAGES re
 connection from ('127.0.0.1', 59208), on Thu 5 Dec 16:4:0 2019, POST_MESSAGE request OK
 connection from ('127.0.0.1', 59210), on Thu 5 Dec 16:4:3 2019, GET_MESSAGES request OK
 connection from ('127.0.0.1', 59234), on Thu 5 Dec 16:7:52 2019, GET_BAORDS request OK
-connection from ('127.0.0.1', 32892), on Thu 5 Dec 16:24:17 2019, GET_BAORDS request OK
