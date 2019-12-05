@@ -13,21 +13,20 @@ def GET_BOARDS():
         response = server_request(message)
         if response:
             try:
-                response = json.loads(response)
+                response = json.loads(response.decode())
             except:
                 print('server responded badly ... ')
                 print('exiting ... ')
                 sys.exit()
             if response['valid'] == 1:
                 return response
-            
             elif response['valid'] == 0:
                 print(response['error']+' error ... ')
                 retry =input('Try again : [Y/N] ')
                 print('exiting ... ')
                 sys.exit()
             else:
-                print('server responded badly ... ')
+                print('server responded badly no valid bit ... ')
                 print('exiting ... ')
                 sys.exit()
                 
@@ -42,7 +41,7 @@ def GET_MESSAGES(board_num):
         response = server_request(message)
         if response:
             try:
-                response = json.loads(response)
+                response = json.loads(response.decode())
             except:
                 print('server responded badly ... ')
                 print('returning to message boards ... ')
@@ -103,7 +102,7 @@ def POST_MESSAGE(board_num, msg_title, msg_content):
         response = server_request(message)
         if response:
             try:
-                response = json.loads(response)
+                response = json.loads(response.decode())
             except:
                 print('server responded badly ... ')
                 print('returning to message boards ... ')
